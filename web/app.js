@@ -59,6 +59,9 @@ const TRANSLATIONS = {
     stat_cycle_sub: "Cron Serverless en GitHub",
 
     manifesto_author: "Orlando (Arcana Chess Studio)",
+    badge_fm: "FM • Maestro FIDE",
+    badge_ft: "FT • Entrenador FIDE",
+    badge_nm: "NM • Maestro Nacional",
     manifesto_badge: "LA PESADILLA DEL AJEDRECISTA",
     manifesto_heading: "Por qué construimos esta herramienta: <span>Basta del infierno de las bases de datos</span>",
     manifesto_p1: "Cualquiera que haya competido en ajedrez de alto rendimiento o haya tenido alumnos a su cargo conoce esta verdad: <strong>la gestión de bases de datos de partidas es una auténtica pesadilla técnica</strong>.",
@@ -158,6 +161,9 @@ const TRANSLATIONS = {
     stat_cycle_sub: "GitHub Serverless Cron",
 
     manifesto_author: "Orlando (Arcana Chess Studio)",
+    badge_fm: "FM • FIDE Master",
+    badge_ft: "FT • FIDE Trainer",
+    badge_nm: "NM • National Master",
     manifesto_badge: "THE CHESS PLAYER'S NIGHTMARE",
     manifesto_heading: "Why We Built This Tool: <span>Ending the Chess Database Nightmare</span>",
     manifesto_p1: "Anyone who has competed in tournament chess or trained students knows this harsh truth: <strong>managing game databases is a constant, exhausting technical nightmare</strong>.",
