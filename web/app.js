@@ -90,7 +90,7 @@ const TRANSLATIONS = {
     promo_badge: "ESTACIÓN DE TRABAJO RECOMENDADA",
     promo_title: "Diseñado para alimentar a <span>Arcana Chess Studio</span>",
     promo_desc: "Navega por millones de partidas a velocidad nativa en macOS. Con motor <strong>Stockfish 19 C++20 in-process</strong>, visor de árboles de aperturas, y sincronización delta automática con esta nube.",
-    promo_btn: "Explorar Arcana Studio",
+    promo_btn: "Próximamente",
 
     dl_tag: "DISTRIBUCIÓN COMUNITARIA",
     dl_title: "Descargas Directas sin Registro",
@@ -188,7 +188,7 @@ const TRANSLATIONS = {
     promo_badge: "RECOMMENDED WORKSTATION",
     promo_title: "Engineered to Power <span>Arcana Chess Studio</span>",
     promo_desc: "Navigate millions of master games at native macOS speed. Powered by an embedded <strong>Stockfish 19 C++20 in-process engine</strong>, opening tree explorer, and automatic delta synchronization.",
-    promo_btn: "Explore Arcana Studio",
+    promo_btn: "Coming Soon",
 
     dl_tag: "COMMUNITY DISTRIBUTION",
     dl_title: "Direct Downloads Without Registration",

@@ -344,6 +344,24 @@ code {
   box-shadow: 0 0 20px var(--cyan-glow);
 }
 
+.btn-coming-soon {
+  cursor: default;
+  background: rgba(0, 229, 255, 0.1) !important;
+  color: var(--cyan) !important;
+  border: 1px solid var(--border-accent);
+  box-shadow: none !important;
+  user-select: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.btn-coming-soon:hover {
+  filter: none !important;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2) !important;
+  transform: none !important;
+}
+
 /* Downloads Section */
 .download-section {
   padding: 80px 0;
