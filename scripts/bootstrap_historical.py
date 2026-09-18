@@ -117,20 +117,30 @@ def main():
 
     stats = db.get_stats()
 
+    pgn_zip_path = None
     if args.export_pgn:
         print("\nExporting master consolidated PGN...")
         pgn_count = db.export_master_pgn("dist/arcana_twic_master.pgn")
         print(f"Exported {pgn_count:,} games to dist/arcana_twic_master.pgn")
+        import zipfile
+        pgn_zip_path = "dist/arcana_twic_master.pgn.zip"
+        with zipfile.ZipFile(pgn_zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+            zf.write("dist/arcana_twic_master.pgn", arcname="arcana_twic_master.pgn")
+        Path("dist/arcana_twic_master.pgn").unlink(missing_ok=True)
+        print(f"Compressed master PGN to: {pgn_zip_path}")
 
+    compressed_path = None
     if args.compress:
         print("\nCompressing master SQLite database with Zstandard...")
         compressed_path = db.compress_with_zstd(str(db.db_path), "dist/arcana_twic_master.db.zst")
         print(f"Compressed master database to: {compressed_path}")
 
-    # Generate initial manifest
+    # Generate updated manifest
     manifest = build_manifest_payload(
         latest_issue=stats["latest_issue"],
-        total_games=stats["total_games"]
+        total_games=stats["total_games"],
+        db_file=compressed_path,
+        pgn_zip_file=pgn_zip_path
     )
     write_manifest_files(manifest)
     print("Updated manifest.json")

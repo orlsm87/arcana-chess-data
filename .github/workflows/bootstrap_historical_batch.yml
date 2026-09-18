@@ -1,0 +1,117 @@
+name: "Arcana TWIC Historical Batch Ingestion"
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_issue:
+        description: "Starting TWIC issue number (e.g. 1500)"
+        required: true
+        default: "1600"
+        type: string
+      end_issue:
+        description: "Ending TWIC issue number (e.g. 1661)"
+        required: true
+        default: "1661"
+        type: string
+      delay:
+        description: "Polite delay between HTTP requests in seconds"
+        required: false
+        default: "0.75"
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "twic-sync"
+  cancel-in-progress: false
+
+jobs:
+  bootstrap-batch:
+    name: "Ingest Historical Batch (${{ inputs.start_issue }} - ${{ inputs.end_issue }})"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "Set up Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: "Install System Utilities & zstd"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zstd sqlite3
+
+      - name: "Install Python Dependencies"
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: "Fetch Existing Master Database from Latest Release"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p data dist
+          LATEST_TAG=$(gh release view --json tagName -q .tagName 2>/dev/null || echo "")
+          if [ -n "$LATEST_TAG" ]; then
+            echo "Found previous release $LATEST_TAG. Fetching master database..."
+            gh release download "$LATEST_TAG" -p "arcana_twic_master.db.zst" -D data/ || true
+            if [ -f "data/arcana_twic_master.db.zst" ]; then
+              echo "Decompressing with zstd..."
+              zstd -d "data/arcana_twic_master.db.zst" -o "data/arcana_twic_master.db"
+              rm -f "data/arcana_twic_master.db.zst"
+            fi
+          fi
+
+      - name: "Run Historical Batch Ingestion"
+        run: |
+          python3 scripts/bootstrap_historical.py \
+            --start ${{ inputs.start_issue }} \
+            --end ${{ inputs.end_issue }} \
+            --delay ${{ inputs.delay }} \
+            --export-pgn \
+            --compress
+
+      - name: "Run Integrity Verification"
+        run: |
+          python3 scripts/verify_integrity.py --db data/arcana_twic_master.db --manifest manifest.json
+
+      - name: "Update Latest Release with Consolidated Master Assets"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_TAG=$(gh release view --json tagName -q .tagName 2>/dev/null || echo "v1662")
+          echo "Uploading updated master assets to release $LATEST_TAG..."
+          gh release upload "$LATEST_TAG" \
+            dist/arcana_twic_master.db.zst \
+            dist/arcana_twic_master.pgn.zip \
+            manifest.json \
+            --clobber
+
+      - name: "Commit & Push Updated Manifest"
+        run: |
+          git config user.name "ArcanaDataBot"
+          git config user.email "bot@arcanachess.com"
+          git add manifest.json web/manifest.json
+          git commit -m "chore(historical): ingest TWIC batch ${{ inputs.start_issue }}-${{ inputs.end_issue }} [skip ci]" || echo "No changes"
+          git push origin main || true
+
+      - name: "Setup Pages"
+        uses: actions/configure-pages@v5
+
+      - name: "Upload Web Portal Artifact"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "web"
+
+      - name: "Deploy to GitHub Pages"
+        id: deployment
+        uses: actions/deploy-pages@v4
