@@ -89,8 +89,9 @@ const TRANSLATIONS = {
 
     promo_badge: "ESTACIÓN DE TRABAJO RECOMENDADA",
     promo_title: "Diseñado para alimentar a <span>Arcana Chess Studio</span>",
-    promo_desc: "Navega por millones de partidas a velocidad nativa en macOS. Con motor <strong>Stockfish 19 C++20 in-process</strong>, visor de árboles de aperturas, y sincronización delta automática con esta nube.",
-    promo_btn: "Próximamente",
+    promo_desc: "Navega por millones de partidas a velocidad nativa en macOS. Integra un <strong>motor de análisis de última generación con fuerza sobrehumana (+3500 Elo)</strong> totalmente calibrable: regula su nivel de juego con precisión desde principiante hasta gran maestro, y personaliza su estilo según tus necesidades de entrenamiento —desde un modo táctico y ferozmente agresivo hasta una precisión posicional implacable—. Incluye árbol de aperturas dinámico y sincronización delta automática con esta nube.",
+    promo_btn: "Arcana Chess Studio",
+    promo_status: "Próximamente para macOS",
 
     dl_tag: "DISTRIBUCIÓN COMUNITARIA",
     dl_title: "Descargas Directas sin Registro",
@@ -187,8 +188,9 @@ const TRANSLATIONS = {
 
     promo_badge: "RECOMMENDED WORKSTATION",
     promo_title: "Engineered to Power <span>Arcana Chess Studio</span>",
-    promo_desc: "Navigate millions of master games at native macOS speed. Powered by an embedded <strong>Stockfish 19 C++20 in-process engine</strong>, opening tree explorer, and automatic delta synchronization.",
-    promo_btn: "Coming Soon",
+    promo_desc: "Navigate millions of master games at native macOS speed. Featuring a <strong>next-generation analysis engine of superhuman strength (+3500 Elo)</strong> with fully customizable calibration: fine-tune its playing strength from beginner to grandmaster, and adjust its personality to your training needs —from fiercely aggressive and tactical to relentless positional mastery—. Includes real-time opening tree analysis and seamless cloud delta synchronization.",
+    promo_btn: "Arcana Chess Studio",
+    promo_status: "Coming Soon for macOS",
 
     dl_tag: "COMMUNITY DISTRIBUTION",
     dl_title: "Direct Downloads Without Registration",

@@ -344,22 +344,55 @@ code {
   box-shadow: 0 0 20px var(--cyan-glow);
 }
 
-.btn-coming-soon {
-  cursor: default;
-  background: rgba(0, 229, 255, 0.1) !important;
-  color: var(--cyan) !important;
-  border: 1px solid var(--border-accent);
-  box-shadow: none !important;
-  user-select: none;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+.promo-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.btn-coming-soon:hover {
-  filter: none !important;
-  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2) !important;
-  transform: none !important;
+.btn-arcana.btn-preview {
+  cursor: default;
+  user-select: none;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.18) 0%, rgba(168, 85, 247, 0.22) 100%);
+  color: #ffffff !important;
+  border: 1px solid var(--border-accent);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.12);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.btn-arcana.btn-preview:hover {
+  filter: none;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.22);
+}
+
+.promo-sublabel {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--cyan);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.promo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  display: inline-block;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
 /* Downloads Section */
