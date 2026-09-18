@@ -59,9 +59,9 @@ const TRANSLATIONS = {
     stat_cycle_sub: "Cron Serverless en GitHub",
 
     manifesto_author: "Orlando (Arcana Chess Studio)",
-    badge_fm: "FM • Maestro FIDE",
-    badge_ft: "FT • Entrenador FIDE",
-    badge_nm: "NM • Maestro Nacional",
+    badge_fm: "FM • FIDE Master",
+    badge_ft: "FT • FIDE Trainer",
+    badge_nm: "NM • National Master",
     manifesto_badge: "LA PESADILLA DEL AJEDRECISTA",
     manifesto_heading: "Por qué construimos esta herramienta: <span>Basta del infierno de las bases de datos</span>",
     manifesto_p1: "Cualquiera que haya competido en ajedrez de alto rendimiento o haya tenido alumnos a su cargo conoce esta verdad: <strong>la gestión de bases de datos de partidas es una auténtica pesadilla técnica</strong>.",

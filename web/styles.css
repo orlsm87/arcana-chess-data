@@ -165,6 +165,12 @@ code {
   color: var(--cyan);
 }
 
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .nav-btn-github {
   display: inline-flex;
   align-items: center;
@@ -1081,6 +1087,7 @@ code {
   .promo-body { flex-direction: column; text-align: center; }
   .attribution-card { flex-direction: column; }
   .nav-links { display: none; }
+  .nav-btn-github { display: none; }
   .manifesto-card { padding: 24px 20px; }
   .manifesto-body h2 { font-size: 1.4rem; }
   .scope-card { padding: 24px 20px; }
