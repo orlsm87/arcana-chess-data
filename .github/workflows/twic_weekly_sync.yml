@@ -1,0 +1,210 @@
+name: "Arcana TWIC Weekly Sync & Release"
+
+on:
+  schedule:
+    # Every Monday at 22:00 UTC (respectful off-peak sync after TWIC publication)
+    - cron: '0 22 * * 1'
+  workflow_dispatch:
+    inputs:
+      force_issue:
+        description: "Specify TWIC issue number to force sync (leave blank for auto-detect)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "twic-sync"
+  cancel-in-progress: false
+
+jobs:
+  sync-twic:
+    name: "Sync, Ingest & Deploy TWIC"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "Set up Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: "Install System Utilities & zstd"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zstd sqlite3
+
+      - name: "Install Python Dependencies"
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: "Fetch Existing Master Database from Latest Release"
+        id: fetch_master
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p data dist
+          echo "Checking latest GitHub release for master database..."
+          LATEST_TAG=$(gh release view --json tagName -q .tagName 2>/dev/null || echo "")
+          if [ -n "$LATEST_TAG" ]; then
+            echo "Found previous release $LATEST_TAG. Downloading master database..."
+            gh release download "$LATEST_TAG" -p "arcana_twic_master.db.zst" -D data/ || true
+            if [ -f "data/arcana_twic_master.db.zst" ]; then
+              echo "Decompressing master database with zstd..."
+              zstd -d "data/arcana_twic_master.db.zst" -o "data/arcana_twic_master.db"
+              rm -f "data/arcana_twic_master.db.zst"
+              echo "has_master=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_master=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No prior release found. Will initialize new database."
+            echo "has_master=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "Detect & Ingest New TWIC Issue"
+        id: ingest
+        run: |
+          python3 - << 'EOF'
+          import os
+          import sys
+          from pathlib import Path
+          from src.crawler.twic_downloader import download_twic_zip, extract_pgn_from_zip, get_latest_twic_issue
+          from src.database.master_builder import MasterDatabase
+          from src.parser.pgn_cleaner import stream_pgn_games
+          from src.api.generate_manifest import build_manifest_payload, write_manifest_files
+
+          db = MasterDatabase(db_path="data/arcana_twic_master.db")
+          current_stats = db.get_stats()
+          last_processed = current_stats["latest_issue"]
+
+          force_issue = "${{ inputs.force_issue }}".strip()
+          target_issue = int(force_issue) if force_issue else get_latest_twic_issue()
+
+          print(f"Latest in DB: {last_processed} | Target TWIC Issue: {target_issue}")
+
+          if target_issue <= last_processed and not force_issue:
+            print("Database is already up to date with latest TWIC issue.")
+            with open(os.environ["GITHUB_OUTPUT"], "a") as gh_out:
+                gh_out.write("new_games=false\n")
+            sys.exit(0)
+
+          # Download and ingest target issue
+          print(f"Downloading TWIC {target_issue}...")
+          zip_path = download_twic_zip(target_issue, dest_dir="data/raw_zips", delay_seconds=1.0)
+          pgn_file = extract_pgn_from_zip(zip_path, extract_dir="data/extracted_pgns")
+
+          with open(pgn_file, "r", encoding="utf-8", errors="ignore") as f:
+              games_stream = stream_pgn_games(f, deduplicate=True)
+              inserted = db.ingest_games(target_issue, games_stream)
+
+          print(f"Successfully inserted {inserted:,} games for issue {target_issue}.")
+
+          # Create weekly delta package
+          delta_zip = db.create_weekly_delta_package(target_issue, str(pgn_file), output_dir="dist")
+          pgn_file.unlink(missing_ok=True)
+
+          # Export and compress master PGN
+          print("Exporting master consolidated PGN...")
+          db.export_master_pgn("dist/arcana_twic_master.pgn")
+          import zipfile
+          with zipfile.ZipFile("dist/arcana_twic_master.pgn.zip", "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+              zf.write("dist/arcana_twic_master.pgn", arcname="arcana_twic_master.pgn")
+          Path("dist/arcana_twic_master.pgn").unlink(missing_ok=True)
+
+          # Compress master SQLite with zstd
+          print("Compressing master SQLite database with zstd...")
+          compressed_db = db.compress_with_zstd("data/arcana_twic_master.db", "dist/arcana_twic_master.db.zst")
+
+          final_stats = db.get_stats()
+
+          # Generate updated manifest.json
+          manifest = build_manifest_payload(
+              latest_issue=target_issue,
+              total_games=final_stats["total_games"],
+              repo_owner="${{ github.repository_owner }}",
+              repo_name="${{ github.event.repository.name }}",
+              db_file=compressed_db,
+              pgn_zip_file="dist/arcana_twic_master.pgn.zip",
+              delta_zip_file=delta_zip,
+              delta_games_count=inserted
+          )
+          write_manifest_files(manifest, ("manifest.json", "web/manifest.json"))
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as gh_out:
+              gh_out.write("new_games=true\n")
+              gh_out.write(f"issue={target_issue}\n")
+              gh_out.write(f"inserted={inserted}\n")
+              gh_out.write(f"total_games={final_stats['total_games']}\n")
+          EOF
+
+      - name: "Run Database Integrity & Checksum Verification"
+        if: steps.ingest.outputs.new_games == 'true'
+        run: |
+          python3 scripts/verify_integrity.py --db data/arcana_twic_master.db --manifest manifest.json
+
+      - name: "Create GitHub Release"
+        if: steps.ingest.outputs.new_games == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.ingest.outputs.issue }}"
+          name: "Arcana Chess Data Cloud — TWIC #${{ steps.ingest.outputs.issue }}"
+          body: |
+            ## ♟️ Arcana Chess Data Cloud - Weekly Release v${{ steps.ingest.outputs.issue }}
+
+            * **TWIC Issue:** #${{ steps.ingest.outputs.issue }}
+            * **New Games Added:** ${{ steps.ingest.outputs.inserted }}
+            * **Total Master Games:** ${{ steps.ingest.outputs.total_games }}
+            * **Automated Sync Timestamp:** ${{ steps.sync-date.outputs.date }}
+
+            ### 📦 Direct Downloads:
+            - **Master SQLite Database (Zstandard):** `arcana_twic_master.db.zst`
+            - **Master PGN Archive (.zip):** `arcana_twic_master.pgn.zip`
+            - **Weekly Delta Batch (.zip):** `twic_${{ steps.ingest.outputs.issue }}.zip`
+            - **API Specification:** `manifest.json`
+
+            ---
+            *Source data provided by Mark Crowther at [theweekinchess.com](https://theweekinchess.com). Please support TWIC!*
+          draft: false
+          prerelease: false
+          files: |
+            dist/arcana_twic_master.db.zst
+            dist/arcana_twic_master.pgn.zip
+            dist/twic_${{ steps.ingest.outputs.issue }}.zip
+            manifest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Commit & Push Updated Manifest"
+        if: steps.ingest.outputs.new_games == 'true'
+        run: |
+          git config user.name "ArcanaDataBot"
+          git config user.email "bot@arcanachess.com"
+          git add manifest.json web/manifest.json
+          git commit -m "chore(sync): update manifest for TWIC issue #${{ steps.ingest.outputs.issue }} [skip ci]" || echo "No changes to commit"
+          git push origin main || true
+
+      - name: "Setup Pages"
+        if: steps.ingest.outputs.new_games == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/configure-pages@v5
+
+      - name: "Upload Web Portal Artifact"
+        if: steps.ingest.outputs.new_games == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "web"
+
+      - name: "Deploy to GitHub Pages"
+        if: steps.ingest.outputs.new_games == 'true' || github.event_name == 'workflow_dispatch'
+        id: deployment
+        uses: actions/deploy-pages@v4

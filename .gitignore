@@ -1,0 +1,37 @@
+# Arcana Chess Data Cloud - Git Ignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Data & Database Artifacts
+data/
+dist/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.zst
+*.zip
+*.pgn
+!tests/fixtures/*.pgn
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

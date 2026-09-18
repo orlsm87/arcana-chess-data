@@ -1,0 +1,27 @@
+{
+  "service": "Arcana Chess Data Cloud",
+  "version": "1.0",
+  "updated_at": "2026-09-18T05:32:02Z",
+  "latest_issue": 1662,
+  "latest_issue_date": "2026-09-18",
+  "total_games": 2,
+  "master_database": {
+    "version_issue": 1662,
+    "size_mb": 0.0,
+    "format": "sqlite3+zip",
+    "download_url": "https://github.com/orlsm87/arcana-chess-data/releases/download/v1662/arcana_twic_master.db.zip",
+    "sha256": "1e2bab4a82cb2d58f5b7e058fa76032fa0124238fbdaf862af9e8b2246838c25"
+  },
+  "master_pgn": {
+    "version_issue": 1662,
+    "size_mb": 510.2,
+    "format": "pgn+zip",
+    "download_url": "https://github.com/orlsm87/arcana-chess-data/releases/download/v1662/arcana_twic_master.pgn.zip",
+    "sha256": ""
+  },
+  "weekly_delta": {
+    "issue": 1662,
+    "games_count": 0,
+    "download_url": "https://github.com/orlsm87/arcana-chess-data/releases/download/v1662/twic_1662.zip"
+  }
+}

@@ -1,0 +1,4 @@
+# Arcana Chess Data Cloud - Dependencies
+# The core pipeline is zero-dependency (Python 3 stdlib), but these enhance performance:
+zstandard>=0.22.0
+pytest>=8.0.0

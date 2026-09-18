@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcana Chess Data Cloud | Plataforma Global de Datos de TWIC</title>
+  <meta name="description" content="Base de datos maestra de ajedrez mundial The Week in Chess (TWIC) pre-indexada en SQLite + Zstandard. Actualizaciones automáticas semanales con coste $0/mes para Arcana Chess Studio.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♟️</text></svg>">
+</head>
+<body>
+  <!-- Ambient cyber glow effects -->
+  <div class="glow-orb glow-top"></div>
+  <div class="glow-orb glow-bottom"></div>
+
+  <!-- Header / Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <div class="brand">
+        <span class="brand-icon">♟️</span>
+        <div class="brand-text">
+          <span class="brand-title">ARCANA <span class="brand-badge">DATA CLOUD</span></span>
+          <span class="brand-sub">TWIC Engine & Pipeline</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#downloads">Descargas</a>
+        <a href="#terminal">Terminal SQL</a>
+        <a href="#api">API JSON</a>
+        <a href="#attribution">Atribución TWIC</a>
+        <a href="https://github.com/orlsm87/arcana-chess-data" target="_blank" class="nav-btn-github">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-content">
+      <div class="status-tag">
+        <span class="pulse-dot"></span>
+        <span id="sync-status-text">SINCRONIZACIÓN ACTIVA • COSTO $0/MES</span>
+      </div>
+      <h1 class="hero-title">
+        La Base Maestra de <span class="gradient-text">The Week in Chess</span> en SQLite
+      </h1>
+      <p class="hero-description">
+        Pipeline serverless y autónomo que consolida, sanitiza y comprime más de 30 años de partidas mundiales de TWIC con compresión <strong>Zstandard</strong> e indexación B-Tree ultrarrápida.
+      </p>
+
+      <!-- Live Metrics Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">TOTAL PARTIDAS INDEXADAS</div>
+          <div class="metric-value" id="stat-total-games">4,892,400+</div>
+          <div class="metric-sub">Deduplicadas y sanitizadas</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">EDICIÓN ACTUAL TWIC</div>
+          <div class="metric-value accent" id="stat-latest-issue">#1662</div>
+          <div class="metric-sub" id="stat-issue-date">Septiembre 2026</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">TAMAÑO COMPRIMIDO (ZST)</div>
+          <div class="metric-value" id="stat-db-size">~420 MB</div>
+          <div class="metric-sub">Descompresión < 2 seg en Mac</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">CICLO DE ACTUALIZACIÓN</div>
+          <div class="metric-value emerald">Lunes 22:00 UTC</div>
+          <div class="metric-sub">Cron Serverless en GitHub</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promotion Banner: Arcana Chess Studio -->
+  <section class="container studio-promo-section">
+    <div class="studio-promo-card">
+      <div class="promo-badge">ESTACIÓN DE TRABAJO RECOMENDADA</div>
+      <div class="promo-body">
+        <div class="promo-text">
+          <h2>Diseñado para alimentar a <span>Arcana Chess Studio</span></h2>
+          <p>
+            Navega por millones de partidas a velocidad nativa en macOS. Con motor <strong>Stockfish 19 C++20 in-process</strong>, visor de árboles de aperturas, y sincronización delta automática con esta nube.
+          </p>
+        </div>
+        <div class="promo-action">
+          <a href="https://github.com/orlsm87/Stockfish-master" class="btn btn-arcana">
+            <span>Explorar Arcana Studio</span>
+            <span class="btn-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Hub Section -->
+  <section class="download-section" id="downloads">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">DISTRIBUCIÓN COMUNITARIA</span>
+        <h2 class="section-title">Descargas Directas sin Registro</h2>
+        <p class="section-sub">Alojadas en la CDN global de GitHub Releases con ancho de banda y velocidad ilimitada.</p>
+      </div>
+
+      <div class="downloads-grid">
+        <!-- Master SQLite Card -->
+        <div class="download-card featured">
+          <div class="card-tag">RECOMENDADO PARA APPS</div>
+          <div class="card-icon">🗄️</div>
+          <h3>Base de Datos Maestra SQLite</h3>
+          <p>La base completa desde TWIC 1 al presente, estructurada en SQLite 3 con índices en Blancas, Negras, ECO y Fecha. Comprimida con Zstandard.</p>
+          <div class="file-meta">
+            <span class="meta-item">Formato: <code>.sqlite3.zst</code></span>
+            <span class="meta-item" id="dl-db-size">Peso: ~420 MB</span>
+          </div>
+          <a id="btn-download-db" href="#" class="btn btn-primary btn-block">
+            <span>⬇️ Descargar Master SQLite (.zst)</span>
+          </a>
+          <div class="sha-box">
+            <span class="sha-label">SHA-256:</span>
+            <code id="sha-db" class="sha-code">Calculando checksum...</code>
+          </div>
+        </div>
+
+        <!-- Master PGN Zip Card -->
+        <div class="download-card">
+          <div class="card-tag">COMPATIBILIDAD UNIVERSAL</div>
+          <div class="card-icon">📜</div>
+          <h3>Archivo PGN Consolidado</h3>
+          <p>Todas las partidas históricas en formato estándar PGN compatible con cualquier software de ajedrez (ChessBase, SCID, Fritz, Lichess, Chess.com).</p>
+          <div class="file-meta">
+            <span class="meta-item">Formato: <code>.pgn.zip</code></span>
+            <span class="meta-item" id="dl-pgn-size">Peso: ~510 MB</span>
+          </div>
+          <a id="btn-download-pgn" href="#" class="btn btn-secondary btn-block">
+            <span>⬇️ Descargar Master PGN (.zip)</span>
+          </a>
+          <div class="sha-box">
+            <span class="sha-label">SHA-256:</span>
+            <code id="sha-pgn" class="sha-code">Calculando checksum...</code>
+          </div>
+        </div>
+
+        <!-- Weekly Delta Card -->
+        <div class="download-card">
+          <div class="card-tag">ACTUALIZACIÓN SEMANAL</div>
+          <div class="card-icon">⚡</div>
+          <h3>Parche Semanal (Delta)</h3>
+          <p>Únicamente las partidas de la última edición de TWIC. Ideal para mantener tu base de datos al día sin descargar todo el archivo acumulado.</p>
+          <div class="file-meta">
+            <span class="meta-item" id="dl-delta-name">Edición: TWIC #1662</span>
+            <span class="meta-item" id="dl-delta-games">Partidas: ~3,400</span>
+          </div>
+          <a id="btn-download-delta" href="#" class="btn btn-secondary btn-block">
+            <span>⬇️ Descargar Última Edición (.zip)</span>
+          </a>
+          <div class="sha-box">
+            <span class="sha-label">Uso:</span>
+            <code class="sha-code">Importación incremental en Arcana</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Terminal Simulator -->
+  <section class="terminal-section" id="terminal">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">CONSULTAS A MÁXIMA VELOCIDAD</span>
+        <h2 class="section-title">Prueba la Arquitectura SQLite</h2>
+        <p class="section-sub">Ejecuta consultas de ejemplo para ver la estructura de campos y el poder de los índices B-Tree.</p>
+      </div>
+
+      <div class="terminal-box">
+        <div class="terminal-header">
+          <div class="terminal-buttons">
+            <span class="btn-dot close"></span>
+            <span class="btn-dot min"></span>
+            <span class="btn-dot max"></span>
+          </div>
+          <span class="terminal-title">arcana-sqlite3 — arcana_twic_master.db (WAL Mode)</span>
+          <div class="terminal-badge">READY</div>
+        </div>
+
+        <!-- Query Presets -->
+        <div class="terminal-presets">
+          <span class="presets-label">Consultas Rápidas:</span>
+          <button class="preset-btn active" data-query="carlsen">Magnus Carlsen con Negras (C88)</button>
+          <button class="preset-btn" data-query="kasparov">Garry Kasparov en TWIC</button>
+          <button class="preset-btn" data-query="openings">Top 5 Aperturas Más Populares</button>
+        </div>
+
+        <div class="terminal-screen" id="terminal-screen">
+          <div class="terminal-line input-line">
+            <span class="prompt">arcana-db&gt;</span>
+            <span class="sql-input" id="terminal-query-text">SELECT twic_issue, white, black, result, date, eco FROM games WHERE black = 'Carlsen, Magnus' AND eco = 'C88' LIMIT 3;</span>
+          </div>
+          <div class="terminal-output" id="terminal-output">
+            <!-- Simulated rows inserted by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Documentation Section -->
+  <section class="api-section" id="api">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">ESPECIFICACIÓN CDN</span>
+        <h2 class="section-title">API REST Estática (manifest.json)</h2>
+        <p class="section-sub">Servida con latencia mínima a través de GitHub Pages / CDN para sincronización de clientes desktop y bots.</p>
+      </div>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span class="code-tab">manifest.json</span>
+          <span class="code-url">GET https://orlsm87.github.io/arcana-chess-data/manifest.json</span>
+        </div>
+        <pre class="code-block"><code id="manifest-display">Cargando especificación manifest.json en vivo...</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Attribution & Ethics Section -->
+  <section class="attribution-section" id="attribution">
+    <div class="container">
+      <div class="attribution-card">
+        <div class="attr-icon">🤝</div>
+        <div class="attr-content">
+          <h3>Reconocimiento Formal y Ética: The Week in Chess (TWIC)</h3>
+          <p>
+            <strong>Arcana Chess Data Cloud</strong> es un proyecto independiente y complementario que no busca reemplazar a <em>The Week in Chess</em>, sino facilitar su indexación para clientes de escritorio modernos.
+          </p>
+          <p>
+            Todas las partidas son recopiladas originalmente por el periodista ajedrecístico <strong>Mark Crowther</strong>, quien ha mantenido TWIC de forma ininterrumpida desde 1994. Reconocemos profundamente su labor histórica para la cultura ajedrecística mundial.
+          </p>
+          <div class="attr-links">
+            <a href="https://theweekinchess.com" target="_blank" class="attr-btn">Visitar theweekinchess.com</a>
+            <a href="https://theweekinchess.com/twic" target="_blank" class="attr-btn highlight">Apoyar / Donar a TWIC</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <span class="footer-logo">♟️ ARCANA CHESS DATA CLOUD</span>
+        <p>Infraestructura serverless de costo $0/mes para la comunidad global de ajedrez.</p>
+      </div>
+      <div class="footer-right">
+        <p>Licencia de código abierto MIT • Diseñado para <a href="https://github.com/orlsm87/Stockfish-master">Arcana Chess Studio</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
