@@ -58,7 +58,7 @@ const TRANSLATIONS = {
     stat_cycle_val: "Lunes 22:00 UTC",
     stat_cycle_sub: "Cron Serverless en GitHub",
 
-    manifesto_author: "Orlando (Arcana Chess Studio)",
+    manifesto_author: "Orlando Sosa (Arcana Chess Studio)",
     badge_fm: "FM • FIDE Master",
     badge_ft: "FT • FIDE Trainer",
     badge_nm: "NM • National Master",
@@ -160,7 +160,7 @@ const TRANSLATIONS = {
     stat_cycle_val: "Mondays 22:00 UTC",
     stat_cycle_sub: "GitHub Serverless Cron",
 
-    manifesto_author: "Orlando (Arcana Chess Studio)",
+    manifesto_author: "Orlando Sosa (Arcana Chess Studio)",
     badge_fm: "FM • FIDE Master",
     badge_ft: "FT • FIDE Trainer",
     badge_nm: "NM • National Master",
