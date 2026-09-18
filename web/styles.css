@@ -313,7 +313,20 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 32px;
+  gap: 36px;
+  position: relative;
+}
+
+.promo-content-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.promo-preview-col {
+  flex-shrink: 0;
+  width: 370px;
+  position: relative;
+  z-index: 30;
 }
 
 .promo-text h2 {
@@ -353,9 +366,9 @@ code {
 .promo-action {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  flex-shrink: 0;
+  margin-top: 22px;
 }
 
 .btn-arcana.btn-preview {
@@ -406,7 +419,6 @@ code {
   gap: 6px;
   margin-top: 4px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 
 .platform-badge {
@@ -434,6 +446,179 @@ code {
   color: var(--text-dim);
   border: 1px solid rgba(255, 255, 255, 0.08);
   font-weight: 500;
+}
+
+/* Screenshot Thumbnail & Hover Zoom */
+.screenshot-thumbnail-box {
+  background: #0d1322;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 229, 255, 0.1);
+  cursor: pointer;
+  transform-origin: right center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mac-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #131b2f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  user-select: none;
+}
+
+.mac-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.mac-dot.red { background: #ff5f56; }
+.mac-dot.yellow { background: #ffbd2e; }
+.mac-dot.green { background: #27c93f; }
+
+.mac-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-left: 6px;
+  letter-spacing: 0.03em;
+}
+
+.thumbnail-wrapper {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #000;
+}
+
+.studio-thumb-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(9, 13, 22, 0.85) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px;
+  transition: opacity 0.25s ease;
+}
+
+.zoom-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--cyan);
+  background: rgba(11, 14, 20, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  border-radius: 4px;
+  padding: 3px 8px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Hover Zoom Expansion on Desktop */
+@media (min-width: 992px) {
+  .screenshot-thumbnail-box:hover {
+    transform: scale(1.85);
+    z-index: 100;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.98), 0 0 45px rgba(0, 229, 255, 0.45);
+    border-color: var(--cyan);
+  }
+  .screenshot-thumbnail-box:hover .thumb-overlay {
+    opacity: 0;
+  }
+}
+
+/* Lightbox Modal */
+.lightbox-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lightbox-modal.active {
+  display: flex;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 7, 14, 0.88);
+  backdrop-filter: blur(10px);
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 94vw;
+  max-height: 92vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: zoomInLight 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes zoomInLight {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 84vh;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 45px rgba(0, 229, 255, 0.3);
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.lightbox-close:hover {
+  background: var(--cyan);
+  color: #000;
+  border-color: var(--cyan);
+  box-shadow: 0 0 15px var(--cyan-glow);
+}
+
+.lightbox-caption {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 12px var(--cyan-glow);
 }
 
 /* Downloads Section */
@@ -1154,9 +1339,16 @@ code {
 }
 
 /* Responsive adjustments */
+@media (max-width: 991px) {
+  .promo-body { flex-direction: column; text-align: center; }
+  .promo-action { align-items: center; }
+  .promo-platforms { justify-content: center; }
+  .promo-preview-col { width: 100%; max-width: 480px; margin-top: 28px; }
+  .screenshot-thumbnail-box { transform-origin: center center; }
+}
+
 @media (max-width: 768px) {
   .hero-title { font-size: 2.2rem; }
-  .promo-body { flex-direction: column; text-align: center; }
   .attribution-card { flex-direction: column; }
   .nav-links { display: none; }
   .nav-btn-github { display: none; }

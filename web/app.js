@@ -98,6 +98,7 @@ const TRANSLATIONS = {
     promo_desc: "Navega por millones de partidas a velocidad nativa en macOS (con futuras versiones planificadas para Windows, Android e iOS). Integra un <strong>motor de análisis de última generación con fuerza sobrehumana (+3500 Elo)</strong> totalmente calibrable: regula su nivel de juego con precisión desde principiante hasta gran maestro, y personaliza su estilo según tus necesidades de entrenamiento —desde un modo táctico y ferozmente agresivo hasta una precisión posicional implacable—. Incluye árbol de aperturas dinámico y sincronización delta automática con esta nube.",
     promo_btn: "Arcana Chess Studio",
     promo_status: "Próximamente para macOS",
+    promo_zoom_badge: "🔍 Pasar el cursor para ampliar • Clic para pantalla completa",
 
     dl_tag: "DISTRIBUCIÓN COMUNITARIA",
     dl_title: "Descargas Directas sin Registro",
@@ -203,6 +204,7 @@ const TRANSLATIONS = {
     promo_desc: "Navigate millions of master games at native macOS speed (with Windows, Android, and iOS cross-platform releases planned). Featuring a <strong>next-generation analysis engine of superhuman strength (+3500 Elo)</strong> with fully customizable calibration: fine-tune its playing strength from beginner to grandmaster, and adjust its personality to your training needs —from fiercely aggressive and tactical to relentless positional mastery—. Includes real-time opening tree analysis and seamless cloud delta synchronization.",
     promo_btn: "Arcana Chess Studio",
     promo_status: "Coming Soon for macOS",
+    promo_zoom_badge: "🔍 Hover to enlarge • Click for fullscreen",
 
     dl_tag: "COMMUNITY DISTRIBUTION",
     dl_title: "Direct Downloads Without Registration",
@@ -485,9 +487,48 @@ function setupLanguageSwitcher() {
   }
 }
 
+function setupLightbox() {
+  const trigger = document.getElementById("studio-screenshot-trigger");
+  const modal = document.getElementById("image-lightbox");
+  const closeBtn = document.getElementById("lightbox-close");
+  const backdrop = document.getElementById("lightbox-backdrop");
+
+  if (!trigger || !modal) return;
+
+  function openModal() {
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  trigger.addEventListener("click", openModal);
+  trigger.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openModal();
+    }
+  });
+
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (backdrop) backdrop.addEventListener("click", closeModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) {
+      closeModal();
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setLanguage(currentLang);
   setupLanguageSwitcher();
   loadManifest();
   setupTerminal();
+  setupLightbox();
 });

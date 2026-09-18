@@ -8,7 +8,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="styles.css?v=1662.7">
+  <link rel="stylesheet" href="styles.css?v=1662.8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -207,25 +207,45 @@
     <div class="studio-promo-card">
       <div class="promo-badge" data-i18n="promo_badge">ESTACIÓN DE TRABAJO RECOMENDADA</div>
       <div class="promo-body">
-        <div class="promo-text">
-          <h2 data-i18n="promo_title">Diseñado para alimentar a <span>Arcana Chess Studio</span></h2>
-          <p data-i18n="promo_desc">
-            Navega por millones de partidas a velocidad nativa en macOS (con futuras versiones planificadas para Windows, Android e iOS). Integra un <strong>motor de análisis de última generación con fuerza sobrehumana (+3500 Elo)</strong> totalmente calibrable: regula su nivel de juego con precisión desde principiante hasta gran maestro, y personaliza su estilo según tus necesidades de entrenamiento —desde un modo táctico y ferozmente agresivo hasta una precisión posicional implacable—. Incluye árbol de aperturas dinámico y sincronización delta automática con esta nube.
-          </p>
+        <div class="promo-content-col">
+          <div class="promo-text">
+            <h2 data-i18n="promo_title">Diseñado para alimentar a <span>Arcana Chess Studio</span></h2>
+            <p data-i18n="promo_desc">
+              Navega por millones de partidas a velocidad nativa en macOS (con futuras versiones planificadas para Windows, Android e iOS). Integra un <strong>motor de análisis de última generación con fuerza sobrehumana (+3500 Elo)</strong> totalmente calibrable: regula su nivel de juego con precisión desde principiante hasta gran maestro, y personaliza su estilo según tus necesidades de entrenamiento —desde un modo táctico y ferozmente agresivo hasta una precisión posicional implacable—. Incluye árbol de aperturas dinámico y sincronización delta automática con esta nube.
+            </p>
+          </div>
+          <div class="promo-action">
+            <div class="btn btn-arcana btn-preview">
+              <span data-i18n="promo_btn">Arcana Chess Studio</span>
+            </div>
+            <div class="promo-sublabel">
+              <span class="promo-dot"></span>
+              <span data-i18n="promo_status">Próximamente para macOS</span>
+            </div>
+            <div class="promo-platforms">
+              <span class="platform-badge target" title="Lanzamiento inicial"> macOS</span>
+              <span class="platform-badge roadmap" title="En desarrollo futuro">🪟 Windows</span>
+              <span class="platform-badge roadmap" title="En desarrollo futuro">🤖 Android</span>
+              <span class="platform-badge roadmap" title="En desarrollo futuro">📱 iOS</span>
+            </div>
+          </div>
         </div>
-        <div class="promo-action">
-          <div class="btn btn-arcana btn-preview">
-            <span data-i18n="promo_btn">Arcana Chess Studio</span>
-          </div>
-          <div class="promo-sublabel">
-            <span class="promo-dot"></span>
-            <span data-i18n="promo_status">Próximamente para macOS</span>
-          </div>
-          <div class="promo-platforms">
-            <span class="platform-badge target" title="Lanzamiento inicial"> macOS</span>
-            <span class="platform-badge roadmap" title="En desarrollo futuro">🪟 Windows</span>
-            <span class="platform-badge roadmap" title="En desarrollo futuro">🤖 Android</span>
-            <span class="platform-badge roadmap" title="En desarrollo futuro">📱 iOS</span>
+
+        <!-- Interactive Screenshot Preview Thumbnail -->
+        <div class="promo-preview-col">
+          <div class="screenshot-thumbnail-box" id="studio-screenshot-trigger" role="button" tabindex="0" title="Ver captura completa">
+            <div class="mac-window-bar">
+              <span class="mac-dot red"></span>
+              <span class="mac-dot yellow"></span>
+              <span class="mac-dot green"></span>
+              <span class="mac-title">Arcana Chess Studio v1.1 // macOS</span>
+            </div>
+            <div class="thumbnail-wrapper">
+              <img src="img/screenmac.jpg" alt="Arcana Chess Studio macOS - Vista previa" class="studio-thumb-img" loading="lazy">
+              <div class="thumb-overlay">
+                <span class="zoom-badge" data-i18n="promo_zoom_badge">🔍 Pasar el cursor para ampliar • Clic para pantalla completa</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -397,6 +417,16 @@
     </div>
   </footer>
 
-  <script src="app.js?v=1662.7"></script>
+  <!-- Lightbox Modal for Fullscreen View -->
+  <div id="image-lightbox" class="lightbox-modal" aria-hidden="true">
+    <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar">&times;</button>
+      <img id="lightbox-img" src="img/screenmac.png" alt="Arcana Chess Studio macOS Fullscreen">
+      <div class="lightbox-caption">Arcana Chess Studio v1.1 • macOS Native Workstation</div>
+    </div>
+  </div>
+
+  <script src="app.js?v=1662.8"></script>
 </body>
 </html>
