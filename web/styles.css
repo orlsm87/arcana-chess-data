@@ -401,6 +401,41 @@ code {
   50% { opacity: 1; transform: scale(1.2); }
 }
 
+.promo-platforms {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.platform-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+
+.platform-badge.target {
+  background: rgba(0, 229, 255, 0.14);
+  color: var(--cyan);
+  border: 1px solid var(--border-accent);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+}
+
+.platform-badge.roadmap {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+}
+
 /* Downloads Section */
 .download-section {
   padding: 80px 0;
@@ -930,6 +965,43 @@ code {
   background: rgba(56, 189, 248, 0.18);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.5);
+}
+
+.author-academic {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.academic-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.academic-badge.is {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.academic-badge.ped {
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.1);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+}
+
+.academic-badge.doc {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.35);
 }
 
 .manifesto-tag {
