@@ -28,11 +28,12 @@ class MasterDatabase:
 
     def get_connection(self) -> sqlite3.Connection:
         """Opens a SQLite connection with high-performance PRAGMAs."""
-        conn = sqlite3.connect(str(self.db_path))
+        conn = sqlite3.connect(str(self.db_path), timeout=60.0)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("PRAGMA journal_mode = WAL;")
         cur.execute("PRAGMA synchronous = NORMAL;")
+        cur.execute("PRAGMA busy_timeout = 60000;")
         cur.execute("PRAGMA cache_size = -64000;")  # 64 MB RAM cache
         cur.execute("PRAGMA temp_store = MEMORY;")
         cur.close()
@@ -104,13 +105,16 @@ class MasterDatabase:
                 (issue, now_iso, total_inserted)
             )
 
-            # Update master metadata
-            cur.execute("SELECT COUNT(*) FROM games")
-            total_db_games = cur.fetchone()[0]
-
-            cur.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES ('total_games', ?)", (str(total_db_games),))
-            cur.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES ('latest_issue', ?)", (str(issue),))
-            cur.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES ('updated_at', ?)", (now_iso,))
+            # Update master metadata efficiently
+            try:
+                cur.execute("SELECT SUM(games_count) FROM processed_issues")
+                sum_row = cur.fetchone()
+                total_db_games = sum_row[0] if sum_row and sum_row[0] else total_inserted
+                cur.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES ('total_games', ?)", (str(total_db_games),))
+                cur.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES ('latest_issue', ?)", (str(issue),))
+                cur.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES ('updated_at', ?)", (now_iso,))
+            except Exception:
+                pass
 
             conn.commit()
         finally:
@@ -128,8 +132,14 @@ class MasterDatabase:
             cur.execute("SELECT MAX(issue), MIN(issue) FROM processed_issues")
             max_issue, min_issue = cur.fetchone()
 
-            cur.execute("SELECT COUNT(DISTINCT white) + COUNT(DISTINCT black) FROM games")
-            approx_players = cur.fetchone()[0]
+            approx_players = 0
+            try:
+                cur.execute("SELECT value FROM metadata WHERE key = 'approx_players'")
+                row = cur.fetchone()
+                if row:
+                    approx_players = int(row[0])
+            except Exception:
+                pass
 
             file_size_mb = round(os.path.getsize(self.db_path) / (1024 * 1024), 2) if self.db_path.exists() else 0.0
 
