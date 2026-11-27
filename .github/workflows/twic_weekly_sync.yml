@@ -22,8 +22,14 @@ concurrency:
 
 jobs:
   sync-twic:
-    name: "Sync, Ingest & Deploy TWIC"
+    name: "Sync & Ingest TWIC"
     runs-on: ubuntu-latest
+    outputs:
+      new_games: ${{ steps.ingest.outputs.new_games }}
+      issue: ${{ steps.ingest.outputs.issue }}
+      inserted: ${{ steps.ingest.outputs.inserted }}
+      total_games: ${{ steps.ingest.outputs.total_games }}
+      sync_date: ${{ steps.ingest.outputs.sync_date }}
 
     steps:
       - name: "Checkout Repository"
@@ -78,12 +84,14 @@ jobs:
           python3 - << 'EOF'
           import os
           import sys
+          from datetime import datetime, timezone
           from pathlib import Path
           from src.crawler.twic_downloader import download_twic_zip, extract_pgn_from_zip, get_latest_twic_issue
           from src.database.master_builder import MasterDatabase
           from src.parser.pgn_cleaner import stream_pgn_games
           from src.api.generate_manifest import build_manifest_payload, write_manifest_files
 
+          now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
           db = MasterDatabase(db_path="data/arcana_twic_master.db")
           current_stats = db.get_stats()
           last_processed = current_stats["latest_issue"]
@@ -97,6 +105,7 @@ jobs:
             print("Database is already up to date with latest TWIC issue.")
             with open(os.environ["GITHUB_OUTPUT"], "a") as gh_out:
                 gh_out.write("new_games=false\n")
+                gh_out.write(f"sync_date={now_str}\n")
             sys.exit(0)
 
           # Download and ingest target issue
@@ -146,6 +155,7 @@ jobs:
               gh_out.write(f"issue={target_issue}\n")
               gh_out.write(f"inserted={inserted}\n")
               gh_out.write(f"total_games={final_stats['total_games']}\n")
+              gh_out.write(f"sync_date={now_str}\n")
           EOF
 
       - name: "Run Database Integrity & Checksum Verification"
@@ -165,7 +175,7 @@ jobs:
             * **TWIC Issue:** #${{ steps.ingest.outputs.issue }}
             * **New Games Added:** ${{ steps.ingest.outputs.inserted }}
             * **Total Master Games:** ${{ steps.ingest.outputs.total_games }}
-            * **Automated Sync Timestamp:** ${{ steps.sync-date.outputs.date }}
+            * **Automated Sync Timestamp:** ${{ steps.ingest.outputs.sync_date }}
 
             ### 📦 Direct Downloads:
             - **Master SQLite Database (Zstandard):** `arcana_twic_master.db.zst`
@@ -204,7 +214,18 @@ jobs:
         with:
           path: "web"
 
+  deploy-pages:
+    name: "Deploy to GitHub Pages"
+    needs: sync-twic
+    if: needs.sync-twic.outputs.new_games == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: "Deploy to GitHub Pages"
-        if: steps.ingest.outputs.new_games == 'true' || github.event_name == 'workflow_dispatch'
         id: deployment
         uses: actions/deploy-pages@v4
